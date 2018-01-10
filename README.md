@@ -1,2 +1,3 @@
-# autorouter
-autorouter
+# autorouter自动路由组件
+主要分两个部分，路由模块和sdk。<br>
+路由模块负责处理转发所有请求；sdk负责注册服务信息。

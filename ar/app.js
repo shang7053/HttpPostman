@@ -1,33 +1,56 @@
+/**
+ * Module dependencies.
+ */
 var express = require('express');
 var path = require('path');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var exphbs  = require('express-handlebars');
-var multer = require('multer');//ADD 20180105,for get post-form data
+var multer = require('multer');
+var ar = require('./routes/arer');//core router
+var logUtil=require("./util/LogUtil");//log
 
-var index = require('./routes/arer');
-
+/**
+ * express app
+ */
 var app = express();
 
+/**
+ * config log
+ */
+logUtil.add2App(app);
+app.use(logger('dev'));
+
+/**
+ * config templete engine
+ */
 app.engine('.hbs', exphbs({extname:'.hbs'}));
 app.set('view engine', '.hbs');
 
-// uncomment after placing your favicon in /public
-app.use(logger('dev'));
+/**
+ * config request body
+ */
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(multer()); // for parsing multipart/form-data  ADD 20180105,for get post-form data
+app.use(multer()); // for parsing multipart/form-data
 
-app.use('/', index);
+/**
+ * config core router
+ */
+app.use('/', ar);
 
-// catch 404 and forward to error handler
+/**
+ * catch 404 and forward to error handler
+ */
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;
     next(err);
 });
 
-// error handler
+/**
+ * error handler
+ */
 app.use(function(err, req, res) {
     // set locals, only providing error in development
     res.locals.message = err.message;
@@ -38,4 +61,7 @@ app.use(function(err, req, res) {
     res.render('error');
 });
 
+/**
+ *exports app
+ */
 module.exports = app;

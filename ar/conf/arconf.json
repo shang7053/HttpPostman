@@ -1,0 +1,39 @@
+{
+  "port":3000,
+  "polling":true,
+  "redisAddress": [
+    {
+      "port": 6379,
+      "host": "172.16.40.4"
+    },
+    {
+      "port": 6380,
+      "host": "172.16.40.4"
+    },
+    {
+      "port": 6381,
+      "host": "172.16.40.4"
+    }
+  ],
+  "httpTomeOut": 2000,
+  "log4js": {
+    "appenders": {
+      "console": {
+        "type": "console"
+      },
+      "log_date":{
+        "type": "dateFile",
+        "filename": "logs/system.log",
+        "alwaysIncludePattern": true,
+        "pattern": "-yyyy-MM-dd-hh",
+        "encoding": "utf-8"
+      }
+    },
+    "categories": {
+      "default": {
+        "appenders":["console","log_date"],
+        "level": "debug"
+      }
+    }
+  }
+}

@@ -10,9 +10,9 @@
 * 支持返回json、xml
 
 ### 架构图
-
+![架构图](https://static.oschina.net/uploads/space/2018/0112/151844_2KuZ_2358114.png)
 ### 流程图
-
+![流程图](https://static.oschina.net/uploads/space/2018/0112/151857_T8pZ_2358114.png)
 ## 模块
 主要分两个部分，路由模块和sdk模块。<br>
 路由模块负责处理转发所有请求。<br>

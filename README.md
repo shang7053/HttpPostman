@@ -9,10 +9,6 @@
 * 支持表单提交和rest
 * 支持返回json、xml
 
-### 架构图
-![架构图](https://static.oschina.net/uploads/space/2018/0112/151844_2KuZ_2358114.png)
-### 流程图
-![流程图](https://static.oschina.net/uploads/space/2018/0112/151857_T8pZ_2358114.png)
 ## 模块
 主要分两个部分，路由模块和sdk模块。<br>
 路由模块负责处理转发所有请求。<br>
@@ -26,5 +22,4 @@ sdk负责注册服务信息。<br>
 * 适合http接口类应用
 * 适合k8s或任何自动伸缩导致接口应用IP经常变化的环境下使用
 * 目标不是替代任何软件，而是支持动态链接到可用的接口程序
-## 安装
-待更新
+安装及更多文档见[WIKI](https://my.oschina.net/shyloveliyi/blog/1606161)

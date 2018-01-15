@@ -44,7 +44,6 @@ function autoRouter(req, res,callback){
             logger.error(autoRouterErr);
             temp_err=autoRouterErr;
         }
-        //var type=req.method;
         callback(temp_err,req,res,host,time4Start);
     });
 }

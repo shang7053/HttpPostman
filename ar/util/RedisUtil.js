@@ -4,20 +4,41 @@
 /**
  * Module dependencies.
  */
-var Redis = require('ioredis');
+var ioredis = require('ioredis');
+var redis   = require('redis');
 var conf=require("../conf/arconf.json");
 var logger=require("../util/LogUtil").LOGGER;
+var client;
 
 /**
- * create redis cluster client
+ * config redis client by redis deploy type
  */
-var cluster = new Redis.Cluster(conf.redisAddress);
+switch (conf.redisDeployType){
+    case "single":
+        var redisconf=conf.redisAddress[0];
+        client=redis.createClient(redisconf.port, redisconf.host);
+        break;
+    case "cluster":
+        client=new ioredis.Cluster(conf.redisAddress);
+        break;
+    default:
+        throw new Error("redisDeployType only can be single or cluster");
+        break;
+
+}
+
+/**
+ * create redis client err
+ */
+client.on("error", function(error) {
+    logger.error(error);
+});
 
 /**
  * get hash key fields
  */
 function get(key,callback){
-    cluster.hscan(key,0, function (err, res) {
+    client.hscan(key,0, function (err, res) {
         callback(err,res[1]);
     });
 }
@@ -26,7 +47,7 @@ function get(key,callback){
  * remove hash key field
  */
 function remove(key,field){
-    cluster.hdel(key,field, function (err, res) {
+    client.hdel(key,field, function (err, res) {
         if(err){
             logger.info(err);
         }
@@ -38,7 +59,7 @@ function remove(key,field){
  * close redis cluster client
  */
 function close(){
-    cluster.quit(function(){
+    client.quit(function(){
         logger.info("close redis success!");
     });
 }

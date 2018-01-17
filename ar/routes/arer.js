@@ -8,7 +8,7 @@ var express = require('express');
 var router = express.Router();
 var request = require('request');
 var superagent = require('superagent');
-var redisUtil=require("../util/RedisUtil");
+var rzkUtil=require("../util/ZkUtil");
 var conf=require("../conf/arconf.json");
 var logger=require("../util/LogUtil").LOGGER;
 
@@ -26,26 +26,22 @@ router.all('/*', function(req, res) {
  * @param callback how to do when get a realdomain
  */
 function autoRouter(req, res,callback){
-    var time4Start=new Date().getTime();
-    var req_domain=req.hostname;
-    redisUtil.get(req_domain,function(err,data){
-        var temp_err=err;
-        var host=null;
-        try{
-            if (err) {
-                logger.error(err);
-            } else {
-                host=getHost(data);
-                if(!host){
-                    temp_err= new Error('no registed service host!');
-                }
-            }
-        }catch (autoRouterErr){
-            logger.error(autoRouterErr);
-            temp_err=autoRouterErr;
+    var host=null;
+    var temp_err=null;
+    try{
+        var time4Start=new Date().getTime();
+        var req_domain=req.hostname;
+        var hosts=rzkUtil.getHosts(req_domain);
+        host=getHost(hosts);
+        if(!host){
+            temp_err= new Error('no registed service host!');
         }
-        callback(temp_err,req,res,host,time4Start);
-    });
+
+    }catch (autoRouterErr){
+        logger.error(autoRouterErr);
+        temp_err=autoRouterErr;
+    }
+    callback(temp_err,req,res,host,time4Start);
 }
 
 /**
@@ -92,32 +88,28 @@ function routerHost(err,req,res,host,time4Start){
 }
 
 /**
- * get host from redis data,will use weight
- * @param data redis data like [host1,1,host2,1]
+ * get host from zk data,will use weight
+ * @param data zk data like [host1$1,host2$1]
  * @returns {*} host
  */
-function getHost(data){
+function getHost(hosts){
     try{
-        if(data.length===0){
+        if(hosts.length===0){
             return null;
         }
         var totalWeight=0;
         // get total weight
-        for(var i=0;i<data.length;i++){
-            if(i%2===1){
-                totalWeight+=parseInt(data[i]);
-            }
+        for(var i=0;i<hosts.length;i++){
+            totalWeight+=parseInt(hosts[i].split("$")[1]);
         }
         // generate random by weight
         var random=Math.ceil(Math.random()*totalWeight);
         // choose host from data by weight
         var weight=0;
-        for(var i=0;i<data.length;i++){
-            if(i%2===0){
-                weight+=parseInt(data[i+1]);
-                if(weight>=random){
-                    return data[i];
-                }
+        for(var i=0;i<hosts.length;i++){
+            weight+=parseInt(hosts[i].split("$")[1]);
+            if(weight>=random){
+                return hosts[i].split("$")[0];
             }
         }
     }catch (err){
@@ -145,7 +137,7 @@ function handleReq(sreq,req,res,time4Start,host){
         if(err){
             logger.error(err);
             // when err remove unreachable host
-            redisUtil.remove(req_domain,host);
+            rzkUtil.remove(req_domain,host);
             if(conf.polling){
                 // Polling all host up to success,if all faild return err-no registed service host!
                 autoRouter(req, res,routerHost);
@@ -161,7 +153,8 @@ function handleReq(sreq,req,res,time4Start,host){
     // log something
     sreq.on('end', function(){
         var now=new Date().getTime();
-        logger.info("complete "+req_domain+" request,use "+host+"! total cost "+(now-time4Start)+" ms"+",and get realurl cost "+(time4getRealUrl-time4Start)+"ms,do real service cost "+(now-time4getRealUrl)+"ms");
+        //logger.info("complete "+req_domain+" request,use "+host+"! total cost "+(now-time4Start)+" ms"+",and get realurl cost "+(time4getRealUrl-time4Start)+"ms,do real service cost "+(now-time4getRealUrl)+"ms");
+        logger.info("complete %s request,use %s! total cost %s ms"+",and get realurl cost %s ms,do real service cost %s ms",req_domain,host,(now-time4Start),(time4getRealUrl-time4Start),(now-time4getRealUrl));
     });
 }
 

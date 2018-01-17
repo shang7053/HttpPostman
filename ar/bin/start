@@ -6,15 +6,16 @@
 var app = require('../app');
 var debug = require('debug')('ar:server');
 var http = require('http');
-var redisUtil=require("../util/RedisUtil");
+var zkUtil=require("../util/ZkUtil");
 var logger=require("../util/LogUtil").LOGGER;
 var conf=require("../conf/arconf.json");
 
 /**
  * Get port from environment and store in Express.
  */
-var port = normalizePort(conf.port || '3000');
+var port = normalizePort(process.env.PORT||conf.port || '3000');
 app.set('port', port);
+zkUtil.init();//init zkUtil for set data to zkData
 
 /**
  * Create HTTP server.
@@ -59,11 +60,11 @@ function onError(error) {
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      logger.error(bind + ' requires elevated privileges');
+      logger.error('%s requires elevated privileges',bind);
       process.exit(1);
       break;
     case 'EADDRINUSE':
-      logger.error(bind + ' is already in use');
+      logger.error('%s is already in use',bind);
       process.exit(1);
       break;
     default:
@@ -79,13 +80,13 @@ function onListening() {
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
-    logger.info('Listening on ' + bind);
+    logger.info('Listening on %s' , bind);
 }
 
 /**
  * Event listener for HTTP server "close" event.
  */
 function onClose(){
-  redisUtil.close();
+  zkUtil.close();
   logger.log("close server success!");
 }

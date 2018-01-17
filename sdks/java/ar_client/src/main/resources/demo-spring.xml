@@ -13,15 +13,12 @@
      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd  
         http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket.xsd
 ">
-	<bean id="dataSyncCenter" class="com.voole.datasync.sdk.DataSyncCenter" init-method="init" destroy-method="close">
-		<property name="kafka_adress" value="172.16.40.4:9092,172.16.40.4:9092" />
-		<property name="sys_code" value="data_sync_sdk" />
-		<property name="cbtopic" value="cbsynclog" />
-		<property name="regists">
-			<map>
-				<!-- key 为topic,value为对应topic注册的本地处理类，需要实现com.voole.datasync.sdk.IDataDeal -->
-				<entry key="canal-t_canal" value="com.voole.test.DataDealImpl"/>
-			</map>
-		</property>
+	<bean class="com.scc.ar.client.core.AutoRegistService" init-method="init" destroy-method="close">
+		<property name="zkAddress" value="172.16.40.4:2181,172.16.40.5:2181" />
+		<property name="serviceDomain" value="localhost" />
+		<property name="serviceRegisterInterval" value="10" />
+		<property name="serviceIp" value="127.0.0.1" />
+		<property name="servicePort" value="8080" />
+		<property name="serviceWeight" value="1" />
 	</bean>
 </beans>

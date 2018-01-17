@@ -2,20 +2,8 @@
   "port":3000,
   "polling":true,
   "redisDeployType":"cluster",
-  "redisAddress": [
-    {
-      "port": 6379,
-      "host": "172.16.40.4"
-    },
-    {
-      "port": 6380,
-      "host": "172.16.40.4"
-    },
-    {
-      "port": 6381,
-      "host": "172.16.40.4"
-    }
-  ],
+  "zkAddress":"172.16.40.4:2181,172.16.40.5:2181",
+  "zkBasePath":"/ar/domains",
   "httpTomeOut": 2000,
   "log4js": {
     "appenders": {

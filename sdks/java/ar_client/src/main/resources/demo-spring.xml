@@ -17,7 +17,7 @@
 		<property name="zkAddress" value="172.16.40.4:2181,172.16.40.5:2181" />
 		<property name="serviceDomain" value="localhost" />
 		<property name="serviceRegisterInterval" value="10" />
-		<property name="serviceIp" value="127.0.0.1" />
+		<!-- 默认自动获取本机IP <property name="serviceIp" value="127.0.0.1" /> -->
 		<property name="servicePort" value="8080" />
 		<property name="serviceWeight" value="1" />
 	</bean>

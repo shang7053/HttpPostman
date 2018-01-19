@@ -16,11 +16,10 @@ public class ClientTest {
 	public static void main(String[] args) throws IOException {
 		AutoRegistService service = new AutoRegistService();
 		service.setZkAddress("172.16.40.4:2181");
-		service.setServiceDomain("livebaseinf.brightreally.com");
+		service.setServiceDomain("www.baidu.net");
 		service.setServicePort("80");
 		service.setServiceWeight("2");
 		service.setServiceRegisterInterval("100");
-		service.setServiceIp("115.159.58.219");
 		service.init();
 		System.in.read();
 	}
